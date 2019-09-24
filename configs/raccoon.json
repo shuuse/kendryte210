@@ -1,7 +1,7 @@
 {
     "model" : {
-        "architecture":         "ResNet50",
-        "input_size":           416,
+        "architecture":         "MobileNet",
+        "input_size":           224,
         "anchors":              [0.57273, 0.677385, 1.87446, 2.06253, 3.33843, 5.47434, 7.88282, 3.52778, 9.77052, 9.16828],
         "labels":               ["raccoon"],
         "coord_scale" : 		1.0,
@@ -13,17 +13,18 @@
         "full":   				""
     },
     "train" : {
-        "actual_epoch":         25,
-        "train_image_folder":   "..//dataset//raccoon_dataset//images//",
-        "train_annot_folder":   "train_voc_anns//",
-        "train_times":          1,
-        "valid_image_folder":   "..//dataset//raccoon_dataset//images//",
-        "valid_annot_folder":   "valid_anns//",
-        "valid_times":          1,
+        "actual_epoch":         20,
+        "train_image_folder":   "/home/ubuntu/backup/raccoon_dataset/images",
+        "train_annot_folder":   "/home/ubuntu/backup/raccoon_dataset/annotations",
+        "train_times":          2,
+        "valid_image_folder":   "/home/ubuntu/backup/raccoon_dataset/images_valid",
+        "valid_annot_folder":   "/home/ubuntu/backup/raccoon_dataset/annotations_valid",
+        "valid_times":          2,
         "batch_size":           4,
         "learning_rate":        1e-4,
         "saved_folder":   		"raccoon",
-        "jitter":				false,
+        "first_trainable_layer": "",
+        "jitter":				true,
         "is_only_detect" : 		false
     }
 }

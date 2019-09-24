@@ -48,7 +48,7 @@ https://github.com/tensorflow/models/blob/master/research/slim/nets/mobilenet_v1
 # Reference
 
 - [MobileNets: Efficient Convolutional Neural Networks for
-   Mobile Vision Applications](https://arxiv.org/pdf/1704.04861.pdf))
+   Mobile Vision Applications](https://arxiv.org/abs/1704.04861)
 """
 from __future__ import print_function
 from __future__ import absolute_import
@@ -203,32 +203,11 @@ def MobileNet(input_shape=None,
                              '`0.25`, `0.50`, `0.75` or `1.0` only.')
 
         if rows != cols or rows not in [128, 160, 192, 224]:
-            if rows is None:
-                rows = 224
-                warnings.warn('MobileNet shape is undefined.'
-                              ' Weights for input shape '
-                              '(224, 224) will be loaded.')
-            else:
-                raise ValueError('If imagenet weights are being loaded, '
-                                 'input must have a static square shape '
-                                 '(one of (128, 128), (160, 160), '
-                                 '(192, 192), or (224, 224)). '
-                                 'Input shape provided = %s' % (input_shape,))
-
-    if backend.image_data_format() != 'channels_last':
-        warnings.warn('The MobileNet family of models is only available '
-                      'for the input data format "channels_last" '
-                      '(width, height, channels). '
-                      'However your settings specify the default '
-                      'data format "channels_first" (channels, width, height).'
-                      ' You should set `image_data_format="channels_last"` '
-                      'in your Keras config located at ~/.keras/keras.json. '
-                      'The model being returned right now will expect inputs '
-                      'to follow the "channels_last" data format.')
-        backend.set_image_data_format('channels_last')
-        old_data_format = 'channels_first'
-    else:
-        old_data_format = None
+            rows = 224
+            warnings.warn('`input_shape` is undefined or non-square, '
+                          'or `rows` is not in [128, 160, 192, 224]. '
+                          'Weights for input shape (224, 224) will be'
+                          ' loaded as the default.')
 
     if input_tensor is None:
         img_input = layers.Input(shape=input_shape)
@@ -273,8 +252,8 @@ def MobileNet(input_shape=None,
         x = layers.Conv2D(classes, (1, 1),
                           padding='same',
                           name='conv_preds')(x)
-        x = layers.Activation('softmax', name='act_softmax')(x)
         x = layers.Reshape((classes,), name='reshape_2')(x)
+        x = layers.Activation('softmax', name='act_softmax')(x)
     else:
         if pooling == 'avg':
             x = layers.GlobalAveragePooling2D()(x)
@@ -293,9 +272,6 @@ def MobileNet(input_shape=None,
 
     # Load weights.
     if weights == 'imagenet':
-        if backend.image_data_format() == 'channels_first':
-            raise ValueError('Weights for "channels_first" format '
-                             'are not available.')
         if alpha == 1.0:
             alpha_text = '1_0'
         elif alpha == 0.75:
@@ -321,8 +297,6 @@ def MobileNet(input_shape=None,
     elif weights is not None:
         model.load_weights(weights)
 
-    if old_data_format:
-        backend.set_image_data_format(old_data_format)
     return model
 
 
